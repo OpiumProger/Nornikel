@@ -1,11 +1,5 @@
 """
 Обучение U-Net: сегментация талька.
-Оптимизировано под RTX 3050 4GB.
-
-Запуск (из папки Нонрникель):
-    conda activate new_chemberta_env
-    pip install segmentation-models-pytorch albumentations opencv-python-headless
-    python train.py
 
     python train.py --epochs 30 --batch-size 2 --patch-size 384
 """

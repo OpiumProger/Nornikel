@@ -1,21 +1,5 @@
 r"""
 Обучение ResNet18-классификатора руды на 3 класса.
-
-Не использует torchvision: в текущем окружении он падает из-за PIL DLL.
-Читает изображения через OpenCV, модель ResNet18 реализована на чистом PyTorch.
-
-Запуск:
-    conda activate new_chemberta_env
-    cd C:\Users\USER\Desktop\Нонрникель
-    python train_classifier.py
-
-Для RTX 3050 4GB:
-    python train_classifier.py --epochs 30 --batch-size 8 --image-size 224
-
-Выход:
-    models/best_ore_resnet18.pth
-    reports/classifier/train_log.csv
-    reports/classifier/confusion_matrix.csv
 """
 
 from __future__ import annotations

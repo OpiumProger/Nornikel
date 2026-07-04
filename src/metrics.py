@@ -90,9 +90,19 @@ def build_summary(ore_class_ru: str, metrics: OreMetrics) -> str:
     else:
         intergrowth, share = "обычных", metrics.ordinary_share
     return (
-        f"Руда классифицирована как {ore_class_ru}: "
+        f"По экспертным правилам руда классифицирована как {ore_class_ru}: "
         f"содержание талька — {metrics.talc_pct:.1f}%, "
         f"преобладание {intergrowth} срастаний — {share:.0f}%"
+    )
+
+
+def format_classifier_note(class_ru: str, confidence: float) -> str:
+    """Текстовая заметка о классе по CNN-классификатору."""
+    return (
+        f"По CNN-классификатору руда также классифицирована как {class_ru} "
+        f"(confidence={confidence:.3f}). "
+        "На практике результат классификатора зачастую является более значимым "
+        "ориентиром при классификации."
     )
 
 

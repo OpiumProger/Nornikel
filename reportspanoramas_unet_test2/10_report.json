@@ -1,0 +1,43 @@
+{
+  "file": "10.jpg",
+  "panorama": {
+    "original_width": 14999,
+    "original_height": 10391,
+    "working_width": 4096,
+    "working_height": 2837,
+    "scale": 0.273085,
+    "max_side": 4096,
+    "megapixels_original": 155.85,
+    "megapixels_working": 11.62,
+    "talc_mode": "tiled_stitch",
+    "tile_size": 1536,
+    "tile_stride": 1152,
+    "stitch_max_side": 8192,
+    "stitch_width": 8192,
+    "stitch_height": 5675,
+    "stitch_scale": 0.54617,
+    "tiles_total": 117,
+    "min_area_px_stitch": 36,
+    "has_dark_phase": true
+  },
+  "ore_class": "trudnoobogatimaya",
+  "ore_class_ru": "труднообогатимая",
+  "summary": "Руда классифицирована как труднообогатимая: содержание талька — 1.9%, преобладание тонких срастаний — 98%",
+  "classification_method": "rules",
+  "rules_class": "trudnoobogatimaya",
+  "rules_class_ru": "труднообогатимая",
+  "classifier_confidence": null,
+  "classifier_probabilities": null,
+  "classifier_tiles_used": null,
+  "talc_threshold_used": 0.08,
+  "metrics": {
+    "talc_pct": 1.92,
+    "sulfide_pct": 3.11,
+    "ordinary_pct": 0.05,
+    "fine_pct": 3.06,
+    "ordinary_share": 1.7,
+    "fine_share": 98.3,
+    "talc_method": "unet_tiled_stitch+dark_gray_phase"
+  },
+  "metrics_table": "| Метрика | Значение |\n|---------|----------|\n| Доля сульфидов (всего) | 3.11% |\n| Обычные срастания | 0.05% (1.7% среди сульфидов) |\n| Тонкие срастания | 3.06% (98.3% среди сульфидов) |\n| Тальк | 1.92% |\n| Метод талька | unet_tiled_stitch+dark_gray_phase |"
+}

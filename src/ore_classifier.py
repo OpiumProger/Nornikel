@@ -10,6 +10,17 @@ import torch
 from train_classifier import ID_TO_LABEL, LABEL_RU, ResNet18, center_crop, imread_rgb, normalize, resize_short_side
 
 
+def resolve_torch_device(device: str | None = None) -> torch.device:
+    """Выбирает лучшее доступное устройство: CUDA, Apple MPS или CPU."""
+    if device:
+        return torch.device(device)
+    if torch.cuda.is_available():
+        return torch.device("cuda")
+    if getattr(torch.backends, "mps", None) and torch.backends.mps.is_available():
+        return torch.device("mps")
+    return torch.device("cpu")
+
+
 def _load_checkpoint(checkpoint_path: Path, device: torch.device) -> dict:
     try:
         return torch.load(checkpoint_path, map_location=device, weights_only=True)
@@ -22,7 +33,7 @@ class OreClassifierPredictor:
 
     def __init__(self, checkpoint_path: str | Path, device: str | None = None):
         self.checkpoint_path = Path(checkpoint_path)
-        self.device = torch.device(device or ("cuda" if torch.cuda.is_available() else "cpu"))
+        self.device = resolve_torch_device(device)
         checkpoint = _load_checkpoint(self.checkpoint_path, self.device)
 
         id_to_label = checkpoint.get("id_to_label", ID_TO_LABEL)
@@ -51,6 +62,7 @@ class OreClassifierPredictor:
                 self.id_to_label[i]: float(probs[i]) for i in range(len(probs))
             },
             "model_path": str(self.checkpoint_path),
+            "device": self.device.type,
             "tiles_used": 1,
         }
 
@@ -111,6 +123,7 @@ class OreClassifierPredictor:
                 self.id_to_label[i]: float(probs[i]) for i in range(len(probs))
             },
             "model_path": str(self.checkpoint_path),
+            "device": self.device.type,
             "tiles_used": tiles_used,
         }
 

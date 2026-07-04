@@ -16,7 +16,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from src.io import imread, imwrite
-from src.metrics import classify_ore_result, compute_metrics, format_metrics_table
+from src.metrics import classify_ore_result, compute_metrics, format_classifier_note, format_metrics_table
 from src.ore_classifier import predict_ore_class
 from src.preprocess import preprocess
 from src.sulfide_mask import extract_sulfide_masks
@@ -39,6 +39,8 @@ def analyze_image(
     talc_model: Path | None = None,
     classifier_model: Path | None = None,
     talc_threshold: float | str = "auto",
+    talc_heuristic: str = "legacy",
+    unet_max_side: int | None = 1536,
     use_unet: bool = True,
     use_classifier: bool = False,
 ) -> dict:
@@ -55,12 +57,14 @@ def analyze_image(
                 checkpoint_path=talc_model,
                 threshold=talc_threshold,
                 use_unet=True,
+                heuristic=talc_heuristic,
+                max_side=unet_max_side,
             )
         except Exception as exc:
             print(f"[warn] U-Net талька недоступна, fallback на эвристику: {exc}")
-            talc_mask, talc_method = extract_talc_mask(proc)
+            talc_mask, talc_method = extract_talc_mask(img, heuristic=talc_heuristic)
     else:
-        talc_mask, talc_method = extract_talc_mask(proc)
+        talc_mask, talc_method = extract_talc_mask(img, heuristic=talc_heuristic)
 
     ordinary, fine, _ = extract_sulfide_masks(proc)
     metrics = compute_metrics(talc_mask, ordinary, fine, talc_method)
@@ -118,6 +122,18 @@ def main() -> int:
         default="auto",
         help="Порог U-Net: auto или число, например 0.12",
     )
+    parser.add_argument(
+        "--talc-heuristic",
+        choices=["legacy"],
+        default="legacy",
+        help="Эвристика талька: старая тёмно-серая фаза",
+    )
+    parser.add_argument(
+        "--unet-max-side",
+        type=int,
+        default=1536,
+        help="Максимальная сторона для U-Net-инференса; 0 = полный размер без уменьшения",
+    )
     args = parser.parse_args()
 
     if not args.image.exists():
@@ -131,6 +147,8 @@ def main() -> int:
         talc_model=args.talc_model,
         classifier_model=args.classifier_model,
         talc_threshold=talc_threshold,
+        talc_heuristic=args.talc_heuristic,
+        unet_max_side=args.unet_max_side or None,
         use_unet=not args.no_unet,
         use_classifier=args.use_cnn and not args.no_classifier,
     )
@@ -145,7 +163,10 @@ def main() -> int:
         print(f"  Порог U-Net: {out['talc_threshold_used']:.3f}")
 
     if result.classifier_probabilities:
-        print(f"  CNN (для сравнения): {result.classifier_probabilities}")
+        classifier = out.get("classifier") or {}
+        cnn_class = classifier.get("pred_label_ru") or classifier.get("pred_label") or "—"
+        print(format_classifier_note(cnn_class, float(result.classifier_confidence or 0)))
+        print(f"  Вероятности CNN: {result.classifier_probabilities}")
 
     if args.output:
         args.output.mkdir(parents=True, exist_ok=True)

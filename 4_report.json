@@ -1,0 +1,36 @@
+{
+  "file": "4.jpg",
+  "panorama": {
+    "original_width": 13712,
+    "original_height": 10798,
+    "working_width": 4095,
+    "working_height": 3225,
+    "scale": 0.298716,
+    "max_side": 4096,
+    "megapixels_original": 148.06,
+    "megapixels_working": 13.21
+  },
+  "ore_class": "otalkovannaya",
+  "ore_class_ru": "оталькованная",
+  "summary": "Руда классифицирована как оталькованная: содержание талька — 0.6%, преобладание тонких срастаний — 97% (уверенность CNN: 75%)",
+  "classification_method": "resnet",
+  "rules_class": "trudnoobogatimaya",
+  "rules_class_ru": "труднообогатимая",
+  "classifier_confidence": 0.7532100478808085,
+  "classifier_probabilities": {
+    "otalkovannaya": 0.7532100478808085,
+    "ryadovaya": 0.025985723982254665,
+    "trudnoobogatimaya": 0.22080422192811966
+  },
+  "classifier_tiles_used": 48,
+  "talc_threshold_used": 0.08,
+  "metrics": {
+    "talc_pct": 0.56,
+    "sulfide_pct": 20.34,
+    "ordinary_pct": 0.61,
+    "fine_pct": 19.73,
+    "ordinary_share": 3.0,
+    "fine_share": 97.0,
+    "talc_method": "unet+annotation"
+  }
+}

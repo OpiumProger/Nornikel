@@ -42,6 +42,17 @@ def load_unet_config(config_path: Path | None = None) -> dict:
     }
 
 
+def resolve_torch_device(torch, device: str | None = None):
+    """Выбирает лучшее доступное устройство: CUDA, Apple MPS или CPU."""
+    if device:
+        return torch.device(device)
+    if torch.cuda.is_available():
+        return torch.device("cuda")
+    if getattr(torch.backends, "mps", None) and torch.backends.mps.is_available():
+        return torch.device("mps")
+    return torch.device("cpu")
+
+
 def postprocess_talc_mask(
     mask: np.ndarray,
     min_area_px: int = 120,
@@ -111,7 +122,7 @@ class TalcUNetPredictor:
         import torch
 
         self.torch = torch
-        self.device = torch.device(device or ("cuda" if torch.cuda.is_available() else "cpu"))
+        self.device = resolve_torch_device(torch, device)
         self.config = load_unet_config(Path(config_path) if config_path else None)
 
         try:
@@ -218,7 +229,24 @@ def predict_talc_mask_unet(
     threshold: float | str | None = "auto",
     device: str | None = None,
     config_path: str | Path | None = None,
+    max_side: int | None = None,
 ) -> tuple[np.ndarray, np.ndarray, str, float]:
     predictor = get_talc_predictor(checkpoint_path, device=device, config_path=config_path)
-    mask, prob, used_threshold = predictor.predict_mask(img_bgr, threshold=threshold)
-    return mask, prob, "unet", used_threshold
+    original_h, original_w = img_bgr.shape[:2]
+    infer_img = img_bgr
+    resized = False
+
+    if max_side and max(original_h, original_w) > max_side:
+        scale = max_side / max(original_h, original_w)
+        infer_w = max(32, int(original_w * scale))
+        infer_h = max(32, int(original_h * scale))
+        infer_img = cv2.resize(img_bgr, (infer_w, infer_h), interpolation=cv2.INTER_AREA)
+        resized = True
+
+    mask, prob, used_threshold = predictor.predict_mask(infer_img, threshold=threshold)
+    if resized:
+        prob = cv2.resize(prob, (original_w, original_h), interpolation=cv2.INTER_LINEAR)
+        mask = cv2.resize(mask, (original_w, original_h), interpolation=cv2.INTER_NEAREST)
+        mask = (mask > 0).astype(np.uint8) * 255
+
+    return mask, prob, f"unet:{predictor.device.type}", used_threshold

@@ -1,0 +1,8 @@
+{
+  "threshold": 0.05,
+  "patch_size": 256,
+  "tile_stride": 128,
+  "min_area_px": 120,
+  "val_dice_at_threshold": 0.5517,
+  "val_pairs": 49
+}

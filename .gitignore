@@ -1,0 +1,47 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Environments
+.env
+.venv/
+venv/
+env/
+
+# Data: too large for GitHub
+data/raw/
+data/processed/images/
+data/processed/talc_masks/
+data/**/*.log
+
+# Keep small metadata if needed
+!data/processed/manifest.csv
+!data/processed/splits.csv
+
+# Models: upload separately to cloud/release
+models/*.pth
+models/*.pt
+models/*.onnx
+
+# Generated reports / previews
+reports/**/*.jpg
+reports/**/*.jpeg
+reports/**/*.png
+reports/**/*.bmp
+reports/**/*.tif
+reports/**/*.tiff
+reports/**/*.json
+reports/**/*.csv
+
+# Optional: allow the lightweight markdown report
+!reports/dataset_report.md
+
+# OS / IDE
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
